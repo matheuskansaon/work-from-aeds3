@@ -39,7 +39,7 @@ class PTCGUI{
         break;
         case 4:
         {
-          System.out.println("Entre com o id do registro a ser atualizado: ");
+          System.out.println("Entre com o id do registro a ser deletado: ");
           int iden = Integer.parseInt(sc.nextLine());
           delete(iden);
         }
@@ -304,7 +304,9 @@ class PTCGUI{
       e.printStackTrace();
     }
   }
-
+/* read -> percorre o arquivo sequencial,procurando um registro com id indicado para ser deletado.
+* @param (int id) id indicado
+*/
   void delete(int id){
     try{
       if(id > -1){
