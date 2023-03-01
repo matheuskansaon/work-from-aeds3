@@ -107,21 +107,24 @@ class PTCGUI{
                 PkmCarta cartinha = new PkmCarta(informacoes,id);
                 byte[] vector = cartinha.paraByteArray();
                 raf.writeInt(id);
-                raf.writeChar('$');//Lápide da carta de pokemon: '$'(indica que é uma carta de pokémon,e que o registro está ativo)
+                raf.writeByte(0);//Qualquer valor diferente de 0 indica lápide
+                raf.writeByte(12);//12 é o simbolo para indicar que o vetor de bytes seguintes é de uma carta pokemon
                 raf.writeInt(vector.length);
                 raf.write(vector);
             }else if(informacoes[0].contains("Energy")){
                 EnergiaCarta cartinha = new EnergiaCarta(informacoes,id);
                 byte[] vector = cartinha.paraByteArray();
                 raf.writeInt(id);
-                raf.writeChar('#');//Lápide da carta de energia: '#'
+                raf.writeByte(0);
+                raf.writeByte(24);//24 é o simbolo para indicar que o vetor de bytes seguintes é de uma carta de energia
                 raf.writeInt(vector.length);
                 raf.write(vector);
             }else{
                 TreinadorCarta cartinha = new TreinadorCarta(informacoes,id);
                 byte[] vector = cartinha.paraByteArray();
                 raf.writeInt(id);
-                raf.writeChar('%');//Lápide da carta de treinador: '%'
+                raf.writeByte(0);
+                raf.writeByte(42);//42 é o simbolo para indicar que o vetor de bytes seguintes é de uma carta de treinador
                 raf.writeInt(vector.length);
                 raf.write(vector);
             }
@@ -149,23 +152,23 @@ class PTCGUI{
         long size = raf.length();
         while(! meet && raf.getFilePointer()!=size){
           int id_object =  raf.readInt();
-          
           if(id_object == id){
             meet = true;
-            char lapide = raf.readChar();
-            switch(lapide){
-              case '#':
-              case '$':
-              case '%': { 
+            if(0 == raf.readByte()){
+              byte check = raf.readByte();//checar o tipo da carta
+              switch(check){
+              case 12:
+              case 24:
+              case 42: { 
                 //Ler array com dados do registro
                 int length = raf.readInt();
                 byte [] array = new byte [length];
                 raf.read(array);
 
-                if(lapide == '#'){
+                if(check == 24){
                    EnergiaCarta carta = new EnergiaCarta(array,id_object);
                    carta.mostrar();
-                }else if(lapide == '$'){
+                }else if(check == 12){
                    PkmCarta carta = new PkmCarta(array,id_object); 
                    carta.mostrar();
                 }else{
@@ -176,8 +179,13 @@ class PTCGUI{
               }  break;
               default : System.out.println("Registro inválido");
             }
+            }else{
+              System.out.println("ID inválido");
+            }
+            
           } else {
-            raf.readChar();
+            raf.readByte();
+            raf.readByte();
             int length_register = raf.readInt();
             long file_position = raf.getFilePointer();
             raf.seek(file_position + length_register);//Pular registro atual
@@ -186,13 +194,8 @@ class PTCGUI{
         }
 
         raf.close();
-        if(!meet){
-          System.out.println("ID não encontrado");
-        }
-      } else {
-        System.out.println("ID inválido");
+        
       }
-
     }catch (Exception io){
       System.out.println(io.getMessage());
     }
@@ -213,18 +216,19 @@ class PTCGUI{
           int id_object =  raf.readInt();
           if(id_object == id){
             meet = true;
-            char lapide = raf.readChar();
-            switch(lapide){
-              case '#':
-              case '$':
-              case '%':{
+            if(0 == raf.readByte()){
+            byte check = raf.readByte();
+            switch(check){
+              case 12:
+              case 24:
+              case 42:{
                  //Ler array com dados do registro
                 int length = raf.readInt();
                 byte [] array = new byte [length];
                 long posicao = raf.getFilePointer();//Pegar posição atual caso possamos aproveitar o registro,ou para marcar lápide
                 raf.read(array);
 
-                if(lapide == '#'){
+                if(check == 24){
                   EnergiaCarta carta = new EnergiaCarta(array,id_object);
                   byte[] arr2 = carta.modificar(userI);
                   if(arr2.length <=length){
@@ -237,14 +241,15 @@ class PTCGUI{
                     raf.seek(raf.length() -1);raf.read();//Ir até o final do arquivo
                     //Escrever novo registro porque o espaço antigo não pode ser reaproveitado
                     raf.writeInt(idNew);
-                    raf.writeChar('#');
+                    raf.writeByte(0);
+                    raf.writeByte(24);
                     raf.writeInt(arr2.length);
                     raf.write(arr2);
                     //Marcar lápide antiga
                     raf.seek(posicao - 6);
-                    raf.writeChar('!');
+                    raf.writeByte(13);
                   }
-                }else if(lapide == '$'){
+                }else if(check == 12){
                   PkmCarta carta = new PkmCarta(array,id_object); 
                   byte[] arr2 = carta.modificar(userI);
                   if(arr2.length <=length){
@@ -257,12 +262,13 @@ class PTCGUI{
                     raf.seek(raf.length() -1);raf.read();//Ir até o final do arquivo
                     //Escrever novo registro porque o espaço antigo não pode ser reaproveitado
                     raf.writeInt(idNew);
-                    raf.writeChar('$');
+                    raf.writeByte(0);
+                    raf.writeByte(12);
                     raf.writeInt(arr2.length);
                     raf.write(arr2);
                     //Marcar lápide antiga
                     raf.seek(posicao - 6);
-                    raf.writeChar('!');
+                    raf.writeByte(13);
                   }
                 }else{
                   TreinadorCarta carta = new TreinadorCarta(array,id_object);
@@ -277,12 +283,13 @@ class PTCGUI{
                     raf.seek(raf.length() -1);raf.read();//Ir até o final do arquivo
                     //Escrever novo registro porque o espaço antigo não pode ser reaproveitado
                     raf.writeInt(idNew);
-                    raf.writeChar('%');
+                    raf.writeByte(0);
+                    raf.writeByte(42);
                     raf.writeInt(arr2.length);
                     raf.write(arr2);
                     //Marcar lápide antiga
                     raf.seek(posicao - 6);
-                    raf.writeChar('!');
+                    raf.writeChar(13);
                   }
                 }
               } break;
@@ -290,16 +297,18 @@ class PTCGUI{
               default : System.out.println("Registro inválido");
             }
           }else{
-            raf.readChar();
+        System.out.println("ID inválido");
+      }
+        }else{
+            raf.readByte();
+            raf.readByte();
             int length_register = raf.readInt();
             long file_position = raf.getFilePointer();
             raf.seek(file_position + length_register);//Pular registro atual
-          }
-        }
-        raf.close();
-      }else{
-        System.out.println("ID inválido");
+          } 
       }
+      raf.close();
+    }
     }catch(Exception e){
       e.printStackTrace();
     }
@@ -319,9 +328,10 @@ class PTCGUI{
           int object_id = raf.readInt();
           if(object_id == id){
             meet = true;
-            raf.writeChar('!');
+            raf.writeByte(13);
           }else{
-            raf.readChar();
+            raf.readByte();
+            raf.readByte();
             int length_register = raf.readInt();
             long file_position = raf.getFilePointer();
             raf.seek(file_position + length_register);//Pular registro atual 
