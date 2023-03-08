@@ -44,6 +44,18 @@ class PTCGUI{
           delete(iden);
         }
         break;
+        case 5:{
+          int option = 0;
+          System.out.println("1- Intercalação balanceada comum.");
+          System.out.println("2- Intercalação balanceada com blocos diferente");
+          System.out.println("3- Intercalação balanceada com seleção por substituição");
+          System.out.println("Aperte 4 para sair");
+          System.out.print("Entre com sua opção: ");
+          option = Integer.parseInt(sc.nextLine());
+          if(option != 4)
+            ordenar(option);
+        
+        } break;
         case 0:
         {
           System.out.println("Saindo...");
@@ -68,6 +80,7 @@ class PTCGUI{
     System.out.println("2 - Para ler[(R)ead] um registro da BD:");
     System.out.println("3 - Para atualizar[(U)pdate] um registro da BD:");
     System.out.println("4 - Para deletar[(D)elete] um registro da BD:");
+    System.out.println("5 - Ordene o arquivo");
     System.out.println("0 - Para sair:");
     System.out.println("(Digite o número e aperte Enter)");
     System.out.println("----------------------------------");
@@ -351,6 +364,18 @@ class PTCGUI{
     }catch(Exception io){
       System.out.println(io.getMessage());
       io.printStackTrace();
+    }
+  }
+
+  void ordenar(int option){
+    if(option == 1){
+
+    }else if(option == 2 ){
+
+    }else if(option == 3){
+
+    }else{
+      System.out.println("Opção Inválida");
     }
   }
 }
