@@ -30,6 +30,9 @@ class Carta{
     //--------------
     //Construtores
     //--------------
+    Carta(){
+        
+    }
     Carta(byte[] arr,int identificacao){
 
     }

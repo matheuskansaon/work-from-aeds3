@@ -67,6 +67,18 @@ class EnergiaCarta extends Carta{
             e.printStackTrace();
         }
     }
+    //Construtor usado na troca na intercalação
+    EnergiaCarta(EnergiaCarta carta){
+        super();
+        this.id = carta.id;
+        this.nome = carta.nome;
+        this.colecao = carta.colecao;
+        this.numeracao = carta.numeracao;
+        this.dataLancamento = carta.dataLancamento;
+        this.illustrator = carta.illustrator;
+        this.tipoEnergia = carta.tipoEnergia;
+        this.efeito = carta.efeito;
+    }
     //-----------
     //Metodos
     //-----------

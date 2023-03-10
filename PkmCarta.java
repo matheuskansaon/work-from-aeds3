@@ -231,6 +231,25 @@ class PkmCarta extends Carta{
             e.printStackTrace();
         }
     }
+    //Construtor usado na troca na intercalação
+    PkmCarta(PkmCarta carta){
+        super();
+        this.id = carta.id;
+        this.nome = carta.nome;
+        this.colecao = carta.colecao;
+        this.numeracao = carta.numeracao;
+        this.dataLancamento = carta.dataLancamento;
+        this.illustrator = carta.illustrator;
+        this.evolveDe = carta.evolveDe;
+        this.estagio = carta.estagio;
+        this.vida = carta.vida;
+        this.pokePwrBdy = carta.pokePwrBdy;
+        this.tipo = carta.tipo;
+        this.resistencia = carta.resistencia;
+        this.custoRecuo = carta.custoRecuo;
+        this.ataqueHabilidade = carta.ataqueHabilidade;
+        this.fraqueza = carta.fraqueza;
+    }
     //-----------
     //Metodos
     //-----------

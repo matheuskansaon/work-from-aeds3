@@ -73,6 +73,18 @@ class TreinadorCarta extends Carta{
             e.printStackTrace();
         }
     }
+    //Construtor usado na troca na intercalação
+    TreinadorCarta(TreinadorCarta carta){
+        super();
+        this.id = carta.id;
+        this.nome = carta.nome;
+        this.colecao = carta.colecao;
+        this.numeracao = carta.numeracao;
+        this.dataLancamento = carta.dataLancamento;
+        this.illustrator = carta.illustrator;
+        this.tipoTrainer = carta.tipoTrainer;
+        this.efeito = carta.efeito;
+    }
     //-----------
     //Metodos
     //-----------
