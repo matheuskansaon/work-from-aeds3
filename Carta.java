@@ -31,7 +31,7 @@ class Carta{
     //Construtores
     //--------------
     Carta(){
-        
+
     }
     Carta(byte[] arr,int identificacao){
 
@@ -96,7 +96,7 @@ class Carta{
                 resp = sdf.parse("18 Jun,2003");
             }else if(colecao.contains("Sandstorm")){
                 resp = sdf.parse("18 Sep,2003");
-            }else if(colecao.contains("Dragon")){
+            }else if(colecao.contains("Dragon") && !colecao.contains("Frontiers")){
                 resp = sdf.parse("24 Nov,2003");
             }else if(colecao.contains("Team Magma vs. Team Aqua")){
                 resp = sdf.parse("15 Mar,2004");
@@ -148,7 +148,7 @@ class Carta{
             }
         }else if(colecao.contains("Platinum")){
             //Coleções Geração 4 Era P
-            if(!colecao.contains("—")){
+            if(!colecao.contains("—") && !colecao.contains("Arceus")){
                 resp = sdf.parse("11 Feb,2009");
             }else if(colecao.contains("Rising Rivals")){
                 resp = sdf.parse("16 May,2009");
@@ -203,7 +203,7 @@ class Carta{
             }
         }else if(colecao.contains("XY")){
             //Coleções Geração 6
-            if(!colecao.contains("—")){
+            if(!colecao.contains("—") && !colecao.contains("BREAKthrough")){
                 resp = sdf.parse("5 Feb,2014");
             }else if(colecao.contains("Kalos Starter Set")){
                 resp = sdf.parse("8 Nov,2013");

@@ -174,7 +174,7 @@ class PTCGUI{
               case 42: { 
                 //Ler array com dados do registro
                 int length = raf.readInt();
-                byte [] array = new byte [length];
+                byte[] array = new byte [length];
                 raf.read(array);
 
                 if(check == 24){
@@ -325,7 +325,7 @@ class PTCGUI{
       e.printStackTrace();
     }
   }
-/* read -> percorre o arquivo sequencial,procurando um registro com id indicado para ser deletado.
+/* delete -> percorre o arquivo sequencial,procurando um registro com id indicado para ser deletado.
 * @param (int id) id indicado
 */
   void delete(int id){
@@ -387,7 +387,6 @@ class PTCGUI{
   * @param (Carta card2) Carta 2 a ordenar
   * @return (boolean) Resposta se o primeiro card é "menor" que o segundo 
   */
-
   boolean sortCarta(Carta card1,Carta card2){
     boolean resp = true;
     int igualFlag = 0;//Checa quantas vezes as comparações deram igual
@@ -399,7 +398,6 @@ class PTCGUI{
     }
     //Checagem coleção,se a última checagem foi igual
     if(igualFlag == 1){
-
       if(card1.colecao.compareTo(card2.colecao)==0){
         igualFlag++;
       }else if(card1.colecao.contains("Promo") ||card1.colecao.contains("A Alternate") || card1.colecao.contains("POP")){ 
@@ -423,6 +421,8 @@ class PTCGUI{
       }else{
         //Pela lógica do jogo,não deveria chegar aqui,mas caso chegue eu preciso saber para corrigir depois
         System.out.println("Erro ordenação:Não foi possível checar se coleção é promo.");
+        System.out.println("Colecao1: "+card1.colecao);
+        System.out.println("Colecao1: "+card2.colecao);
       }
     }
     //Checagem numeração,se a última checagem foi igual
@@ -481,7 +481,7 @@ class PTCGUI{
                 heapId[count][2] = 12;//Colocar aqui qual tipo de carta é
                 count++;
               }else{
-                ordenarHeap(heapCarta,heapId);
+                ordenarHeap(heapCarta,heapId,count);
                 if(heapId[0][1]%2==0){
                   if(heapId[0][1]!=order){
                     order++;
@@ -494,7 +494,6 @@ class PTCGUI{
                   //mas ela volta quando terminarmos a ordenação e formos reescrever o arquivo .db
                   byte[] arrSorted;
                   //Descobrir qual o tipo de carta que esta no topo do heap
-
                   if(heapId[0][2] == 12){
                     rafTemp1.writeByte(12);
                     PkmCarta gamb = (PkmCarta) heapCarta[0];
@@ -503,10 +502,13 @@ class PTCGUI{
                     rafTemp1.writeByte(24);
                     EnergiaCarta gamb = (EnergiaCarta) heapCarta[0];
                     arrSorted = gamb.paraByteArray();
-                  }else{
+                  }else if(heapId[0][2] == 42){
                     rafTemp1.writeByte(42);
                     TreinadorCarta gamb = (TreinadorCarta) heapCarta[0];
                     arrSorted = gamb.paraByteArray();
+                  }else{
+                    System.out.println("Error Code:1");
+                    arrSorted = new byte[]{1,2,3};
                   }
                   rafTemp1.writeInt(arrSorted.length);
                   rafTemp1.write(arrSorted);
@@ -525,11 +527,14 @@ class PTCGUI{
                     rafTemp2.writeByte(24);
                     EnergiaCarta gamb = (EnergiaCarta) heapCarta[0];
                     arrSorted = gamb.paraByteArray();
-                  }else{
+                  }else if(heapId[0][2] == 42){
                     rafTemp2.writeByte(42);
                     TreinadorCarta gamb = (TreinadorCarta) heapCarta[0];
                     arrSorted = gamb.paraByteArray();
-                  } 
+                  }else{
+                    System.out.println("Error Code:2");
+                    arrSorted = new byte[]{1,2,3};
+                  }
                   rafTemp2.writeInt(arrSorted.length);
                   rafTemp2.write(arrSorted);
                 }
@@ -541,7 +546,7 @@ class PTCGUI{
                   heapId[0][1] = order;
                 }
                 heapCarta[0] = new PkmCarta(cartinha);
-                heapId[0][0] = cartinha.id;
+                heapId[0][0] = idAtual;
                 heapId[0][2] = 12; 
               }
             }
@@ -556,7 +561,7 @@ class PTCGUI{
                 heapId[count][2] = 24;
                 count++;
               }else{
-                ordenarHeap(heapCarta,heapId);
+                ordenarHeap(heapCarta,heapId,count);
               if(heapId[0][1]%2==0){
                   if(heapId[0][1]!=order){
                     order++;
@@ -573,10 +578,13 @@ class PTCGUI{
                     rafTemp1.writeByte(24);
                     EnergiaCarta gamb = (EnergiaCarta) heapCarta[0];
                     arrSorted = gamb.paraByteArray();
-                  }else{
+                  }else if(heapId[0][2] == 42){
                     rafTemp1.writeByte(42);
                     TreinadorCarta gamb = (TreinadorCarta) heapCarta[0];
                     arrSorted = gamb.paraByteArray();
+                  }else{
+                    System.out.println("Error Code:3");
+                    arrSorted = new byte[]{1,2,3};
                   }
                   rafTemp1.writeInt(arrSorted.length);
                   rafTemp1.write(arrSorted);
@@ -595,10 +603,13 @@ class PTCGUI{
                     rafTemp2.writeByte(24);
                     EnergiaCarta gamb = (EnergiaCarta) heapCarta[0];
                     arrSorted = gamb.paraByteArray();
-                  }else{
+                  }else if(heapId[0][2] == 42){
                     rafTemp2.writeByte(42);
                     TreinadorCarta gamb = (TreinadorCarta) heapCarta[0];
                     arrSorted = gamb.paraByteArray();
+                  }else{
+                    System.out.println("Error Code:4");
+                    arrSorted = new byte[]{1,2,3};
                   }
                   rafTemp2.writeInt(arrSorted.length);
                   rafTemp2.write(arrSorted);
@@ -609,7 +620,7 @@ class PTCGUI{
                   heapId[0][1] = order;
                 }
                 heapCarta[0] = new EnergiaCarta(cartinha);
-                heapId[0][0] = cartinha.id;
+                heapId[0][0] = idAtual;
                 heapId[0][2] = 24; 
               }
             }
@@ -623,14 +634,14 @@ class PTCGUI{
                 heapId[count][1] = order;
                 heapId[count][2] = 42;
                 count++;
+                ordenarHeap(heapCarta,heapId,count);
               }else{
-                ordenarHeap(heapCarta,heapId);
+                ordenarHeap(heapCarta,heapId,count);
               if(heapId[0][1]%2==0){
                   if(heapId[0][1]!=order){
                     order++;
                     rafTemp2.writeInt(-1);
                   }
-                  
                   rafTemp1.writeInt(heapId[0][0]);
                   byte[] arrSorted;
                   if(heapId[0][2] == 12){
@@ -641,10 +652,13 @@ class PTCGUI{
                     rafTemp1.writeByte(24);
                     EnergiaCarta gamb = (EnergiaCarta) heapCarta[0];
                     arrSorted = gamb.paraByteArray();
-                  }else{
+                  }else if(heapId[0][2] == 42){
                     rafTemp1.writeByte(42);
                     TreinadorCarta gamb = (TreinadorCarta) heapCarta[0];
                     arrSorted = gamb.paraByteArray();
+                  }else{
+                    System.out.println("Error Code:5");
+                    arrSorted = new byte[]{1,2,3};
                   }
                   rafTemp1.writeInt(arrSorted.length);
                   rafTemp1.write(arrSorted);
@@ -663,10 +677,13 @@ class PTCGUI{
                     rafTemp2.writeByte(24);
                     EnergiaCarta gamb = (EnergiaCarta) heapCarta[0];
                     arrSorted = gamb.paraByteArray();
-                  }else{
+                  }else if(heapId[0][2] == 42){
                     rafTemp2.writeByte(42);
                     TreinadorCarta gamb = (TreinadorCarta) heapCarta[0];
                     arrSorted = gamb.paraByteArray();
+                  }else{
+                    System.out.println("Error Code:6");
+                    arrSorted = new byte[]{1,2,3};
                   }
                   rafTemp2.writeInt(arrSorted.length);
                   rafTemp2.write(arrSorted);
@@ -677,7 +694,7 @@ class PTCGUI{
                   heapId[0][1] = order;
                 }
                 heapCarta[0] = new TreinadorCarta(cartinha);
-                heapId[0][0] = cartinha.id;
+                heapId[0][0] = idAtual;
                 heapId[0][2] = 42; 
               }
             }
@@ -689,13 +706,52 @@ class PTCGUI{
           }
         }else if(raf.getFilePointer() == size){
           //Mesmo apos ler o arquivo todo,sobrarão alguns registros no heap
-          ordenarHeap(heapCarta,heapId);
+          if(count >1){
+          ordenarHeap(heapCarta,heapId,count);
+          }else{
+            int v = 0;
+            for(int reg = 1;v== 0 &&reg<31;reg++){
+              if(heapCarta[reg]!= null){
+                v = reg;
+              }
+            }
+          switch(heapId[v][2]){
+              case 12:{
+                PkmCarta temp1 = (PkmCarta)heapCarta[v];
+                heapCarta[v] = null;
+                heapCarta[0] = new PkmCarta(temp1);
+              }
+              break;
+              case 24:
+              {
+                EnergiaCarta temp1 = (EnergiaCarta)heapCarta[v];
+                heapCarta[v] = null;
+                heapCarta[0] = new EnergiaCarta(temp1);
+              }
+              break;
+              case 42:
+              {
+                TreinadorCarta temp1 = (TreinadorCarta)heapCarta[v];
+                heapCarta[v] = null;
+                heapCarta[0] = new TreinadorCarta(temp1);
+              }
+              break;
+        }
+        int tempI0 = heapId[0][0];
+        int tempI1 = heapId[0][1];
+        int tempI2 = heapId[0][2];
+        heapId[0][0] = heapId[v][0];
+        heapId[0][1] = heapId[v][1];
+        heapId[0][2] = heapId[v][2];
+        heapId[v][0] = tempI0;
+        heapId[v][1] = tempI1;
+        heapId[v][2] = tempI2;
+          }
           if(heapId[0][1]%2==0){
                   if(heapId[0][1]!=order){
                     order++;
                     rafTemp2.writeInt(-1);
                   }
-                  
                   rafTemp1.writeInt(heapId[0][0]);
                   byte[] arrSorted;
                   if(heapId[0][2] == 12){
@@ -706,10 +762,13 @@ class PTCGUI{
                     rafTemp1.writeByte(24);
                     EnergiaCarta gamb = (EnergiaCarta) heapCarta[0];
                     arrSorted = gamb.paraByteArray();
-                  }else{
+                  }else if(heapId[0][2] == 42){
                     rafTemp1.writeByte(42);
                     TreinadorCarta gamb = (TreinadorCarta) heapCarta[0];
                     arrSorted = gamb.paraByteArray();
+                  }else{
+                    System.out.println("Error Code:7");
+                    arrSorted = new byte[]{1,2,3};
                   }
                   rafTemp1.writeInt(arrSorted.length);
                   rafTemp1.write(arrSorted);
@@ -728,10 +787,13 @@ class PTCGUI{
                     rafTemp2.writeByte(24);
                     EnergiaCarta gamb = (EnergiaCarta) heapCarta[0];
                     arrSorted = gamb.paraByteArray();
-                  }else{
+                  }else if(heapId[0][2] == 42){
                     rafTemp2.writeByte(42);
                     TreinadorCarta gamb = (TreinadorCarta) heapCarta[0];
                     arrSorted = gamb.paraByteArray();
+                  }else{
+                    System.out.println("Error Code:8 +" + count);
+                    arrSorted = new byte[]{1,2,3};
                   }
                   rafTemp2.writeInt(arrSorted.length);
                   rafTemp2.write(arrSorted);
@@ -743,17 +805,209 @@ class PTCGUI{
           count--;
         }
       }
-      //Escrever delimitadores finais
+      //Escrever delimitadores finais,caso não existam
+      rafTemp1.seek(rafTemp1.getFilePointer() - 4);
+      if(!(rafTemp1.readInt()==-1)){
       rafTemp1.writeInt(-1);
+      }
+      rafTemp2.seek(rafTemp2.getFilePointer() - 4);
+      if(!(rafTemp2.readInt()==-1)){
       rafTemp2.writeInt(-1);
+      }
       //Começar a intercalar
       intercalarSelectSub(rafTemp1,rafTemp2,rafTemp3,rafTemp4,raf);
+      //Achar arquivo onde intercalação parou pelo seu tamanho
+      
+    int parou = 1;
+    long parouTam = rafTemp1.length();
+    if(parouTam < rafTemp2.length()){
+      parou = 2;
+      parouTam = rafTemp2.length();
+    }
+    if(parouTam < rafTemp3.length()){
+      parou = 3;
+      parouTam = rafTemp3.length();
+    }
+    if(parouTam < rafTemp4.length()){
+      parou = 4;
+      parouTam = rafTemp4.length();
+    }
+    raf.seek(0);
+    int idMax = raf.readInt();
+    raf.setLength(0);//Apagar db original
+    raf.writeInt(idMax);
+    switch(parou){
+      case 1:{
+      rafTemp1.seek(0);
+      while(rafTemp1.getFilePointer()<parouTam - 4){
+        int idd = rafTemp1.readInt();
+        raf.writeInt(idd);
+        raf.writeByte(0);//Todos os registros vindo da intercalação são válidos
+        byte gamb69 = rafTemp1.readByte();
+        raf.writeByte(gamb69);
+        int sizeG = rafTemp1.readInt();
+        raf.writeInt(sizeG);
+        byte[] arr = new byte[sizeG];
+        rafTemp1.read(arr);
+        switch(gamb69){
+          case 12:
+            {
+              PkmCarta cartinha = new PkmCarta(arr,idd);
+              raf.write(cartinha.paraByteArray());
+            }
+          break;
+          case 24:
+            {
+              EnergiaCarta cartinha = new EnergiaCarta(arr,idd);
+              raf.write(cartinha.paraByteArray());
+            }
+          break;
+          case 42:
+            {
+              TreinadorCarta cartinha = new TreinadorCarta(arr,idd);
+              raf.write(cartinha.paraByteArray());
+            }
+          break;
+          default:
+            System.out.println("ERRROOOOR");
+            raf.write(arr);
+          break;
+        }
+       
+      }
+      }
+      break;
+      case 2:
+      {
+      rafTemp2.seek(0);
+      while(rafTemp2.getFilePointer()<parouTam - 4){
+        int idd = rafTemp2.readInt();
+        raf.writeInt(idd);
+        raf.writeByte(0);//Todos os registros vindo da intercalação são válidos
+        byte gamb69 = rafTemp2.readByte();
+        raf.writeByte(gamb69);
+        int sizeG = rafTemp2.readInt();
+        raf.writeInt(sizeG);
+        byte[] arr = new byte[sizeG];
+        rafTemp2.read(arr);
+        switch(gamb69){
+          case 12:
+            {
+              PkmCarta cartinha = new PkmCarta(arr,idd);
+              raf.write(cartinha.paraByteArray());
+            }
+          break;
+          case 24:
+            {
+              EnergiaCarta cartinha = new EnergiaCarta(arr,idd);
+              raf.write(cartinha.paraByteArray());
+            }
+          break;
+          case 42:
+            {
+              TreinadorCarta cartinha = new TreinadorCarta(arr,idd);
+              raf.write(cartinha.paraByteArray());
+            }
+          break;
+          default:
+            System.out.println("ERRROOOOR");
+            raf.write(arr);
+          break;
+        }
+       
+      }
+      }
+      break;
+      case 3:
+      {
+      rafTemp3.seek(0);
+      while(rafTemp3.getFilePointer()<parouTam - 4){
+        int idd = rafTemp3.readInt();
+        raf.writeInt(idd);
+        raf.writeByte(0);//Todos os registros vindo da intercalação são válidos
+        byte gamb69 = rafTemp3.readByte();
+        raf.writeByte(gamb69);
+        int sizeG = rafTemp3.readInt();
+        raf.writeInt(sizeG);
+        byte[] arr = new byte[sizeG];
+        rafTemp3.read(arr);
+        switch(gamb69){
+          case 12:
+            {
+              PkmCarta cartinha = new PkmCarta(arr,idd);
+              raf.write(cartinha.paraByteArray());
+            }
+          break;
+          case 24:
+            {
+              EnergiaCarta cartinha = new EnergiaCarta(arr,idd);
+              raf.write(cartinha.paraByteArray());
+            }
+          break;
+          case 42:
+            {
+              TreinadorCarta cartinha = new TreinadorCarta(arr,idd);
+              raf.write(cartinha.paraByteArray());
+            }
+          break;
+          default:
+            System.out.println("ERRROOOOR");
+            raf.write(arr);
+          break;
+        }
+       
+      }
+      }
+      break;
+      case 4:
+      {
+      rafTemp1.seek(0);
+      while(rafTemp4.getFilePointer()<parouTam - 4){
+        int idd = rafTemp4.readInt();
+        raf.writeInt(idd);
+        raf.writeByte(0);//Todos os registros vindo da intercalação são válidos
+        byte gamb69 = rafTemp4.readByte();
+        raf.writeByte(gamb69);
+        int sizeG = rafTemp4.readInt();
+        raf.writeInt(sizeG);
+        byte[] arr = new byte[sizeG];
+        rafTemp4.read(arr);
+        switch(gamb69){
+          case 12:
+            {
+              PkmCarta cartinha = new PkmCarta(arr,idd);
+              raf.write(cartinha.paraByteArray());
+            }
+          break;
+          case 24:
+            {
+              EnergiaCarta cartinha = new EnergiaCarta(arr,idd);
+              raf.write(cartinha.paraByteArray());
+            }
+          break;
+          case 42:
+            {
+              TreinadorCarta cartinha = new TreinadorCarta(arr,idd);
+              raf.write(cartinha.paraByteArray());
+            }
+          break;
+          default:
+            System.out.println("ERRROOOOR");
+            raf.write(arr);
+          break;
+        }
+       
+      }
+      }
+      break;
+    }
       //Fechar arquivos e deletar os temporarios
       raf.close();
       rafTemp1.close();
       rafTemp2.close();
       rafTemp3.close();
       rafTemp4.close();
+      
       File arq1 = new File("arquivoTemp1.temp");
       arq1.delete();
       File arq2 = new File("arquivoTemp2.temp");
@@ -762,81 +1016,56 @@ class PTCGUI{
       arq3.delete();
       File arq4 = new File("arquivoTemp4.temp");
       arq4.delete();
+      
     }catch(Exception e){
       e.printStackTrace();
     }
+
   }
-  /* ordenarHeap -> ordena os heaps argumento,de acordo com o metodo
-  * @param (Carta[] arrC) heap de cartas
-  * @param (int[][] arrI) heap de ids
+  /* buildHeap -> Constroi um max heap dos arrays argumentos
+  *
   */
-  void ordenarHeap(Carta[] arrC,int[][] arrI){
-    for(int v = 30;v>14;v--){
-      int s = v;
-      while(s>0){
-      //Checar heap elemento inválido
-      if(arrC[s] == null || arrC[(s-1)/2]==null){
-        //Se filho for válido e o pai não,trocar
-        if(arrC[s] != null){
-          switch(arrI[s][2]){
-              case 12:{
-                PkmCarta temp1 = (PkmCarta)arrC[s];
-                arrC[s] = null;
-                arrC[(s-1)/2] = new PkmCarta(temp1);
-              }
-              break;
-              case 24:
-              {
-                EnergiaCarta temp1 = (EnergiaCarta)arrC[s];
-                arrC[s] = null;
-                arrC[(s-1)/2] = new EnergiaCarta(temp1);
-              }
-              break;
-              case 42:
-              {
-                TreinadorCarta temp1 = (TreinadorCarta)arrC[s];
-                arrC[s] = null;
-                arrC[(s-1)/2] = new TreinadorCarta(temp1);
-              }
-              break;
-          }
-           //trocar pai e filho no array de ids
-        int tempI0 = arrI[s][0];
-        int tempI1 = arrI[s][1];
-        int tempI2 = arrI[s][2];
-        arrI[s][0] = arrI[(s-1)/2][0];
-        arrI[s][1] = arrI[(s-1)/2][1];
-        arrI[s][2] = arrI[(s-1)/2][2];
-        arrI[(s-1)/2][0] = tempI0;
-        arrI[(s-1)/2][1] = tempI1;
-        arrI[(s-1)/2][2] = tempI2;  
+  void buildHeap(Carta[] arrC,int[][] arrI,int s,int tam){
+      int maior = s;
+      int esq = s*2 +1;
+      int dir = s*2 +2;
+      if(arrC[s] != null){
+        if(esq < tam && arrC[esq]!= null && sortCarta(arrC[maior],arrC[esq])){
+          maior = esq;
+        }else if(esq < tam && arrC[esq] == null){
+          maior = esq;
         }
-      //checar se filho é menor que o pai
-      }else if(arrI[s][1] <= arrI[(s-1)/2][1] && sortCarta(arrC[s],arrC[(s-1)/2])){
-        //trocar pai e filho no array de cartas
-        switch(arrI[s][2]){
+        if(dir < tam && arrC[dir]!= null && sortCarta(arrC[maior],arrC[dir])){
+          maior = dir;
+        }else if(dir < tam && arrC[dir] == null && arrC[esq]!= null){
+          maior = dir;
+        }
+      }
+      if(maior != s){
+        if(arrC[maior]!=null){
+          switch(arrI[maior][2]){
           case 12:
           {
-            switch(arrI[(s-1)/2][2]){
+            switch(arrI[s][2]){
           case 12:
           {
-            PkmCarta temp1 = (PkmCarta)arrC[s];
-            arrC[s] = new PkmCarta((PkmCarta)arrC[(s-1)/2]);
-            arrC[(s-1)/2] = new PkmCarta(temp1);
+            PkmCarta temp1 = (PkmCarta)arrC[maior];
+            arrC[maior] = new PkmCarta((PkmCarta)arrC[s]);
+            arrC[s] = new PkmCarta(temp1);
           }
           break;
           case 24:
           {
-            PkmCarta temp1 = (PkmCarta)arrC[s];
-            arrC[s] = new EnergiaCarta((EnergiaCarta)arrC[(s-1)/2]);
-            arrC[(s-1)/2] = new PkmCarta(temp1);
+            PkmCarta temp1 = (PkmCarta)arrC[maior];
+            arrC[maior] = new EnergiaCarta((EnergiaCarta)arrC[s]);
+            arrC[s] = new PkmCarta(temp1);
           }
           break; 
           case 42:
           {
-            PkmCarta temp1 = (PkmCarta)arrC[s];
-            arrC[s] = new TreinadorCarta((TreinadorCarta)arrC[(s-1)/2]);
-            arrC[(s-1)/2] = new PkmCarta(temp1);
+            PkmCarta temp1 = (PkmCarta)arrC[maior];
+            arrC[maior] = new TreinadorCarta((TreinadorCarta)arrC[s]);
+            arrC[s] = new PkmCarta(temp1);
           }
           break;
         }
@@ -844,26 +1073,26 @@ class PTCGUI{
           break;
           case 24:
           {
-            switch(arrI[(s-1)/2][2]){
+            switch(arrI[s][2]){
           case 12:
           {
-            EnergiaCarta temp1 = (EnergiaCarta)arrC[s];
-            arrC[s] = new PkmCarta((PkmCarta)arrC[(s-1)/2]);
-            arrC[(s-1)/2] = new EnergiaCarta(temp1);
+            EnergiaCarta temp1 = (EnergiaCarta)arrC[maior];
+            arrC[maior] = new PkmCarta((PkmCarta)arrC[s]);
+            arrC[s] = new EnergiaCarta(temp1);
           }
           break;
           case 24:
           {
-            EnergiaCarta temp1 = (EnergiaCarta)arrC[s];
-            arrC[s] = new EnergiaCarta((EnergiaCarta)arrC[(s-1)/2]);
-            arrC[(s-1)/2] = new EnergiaCarta(temp1);
+            EnergiaCarta temp1 = (EnergiaCarta)arrC[maior];
+            arrC[maior] = new EnergiaCarta((EnergiaCarta)arrC[s]);
+            arrC[s] = new EnergiaCarta(temp1);
           }
           break;
           case 42:
           {
-            EnergiaCarta temp1 = (EnergiaCarta)arrC[s];
-            arrC[s] = new TreinadorCarta((TreinadorCarta)arrC[(s-1)/2]);
-            arrC[(s-1)/2] = new EnergiaCarta(temp1);
+            EnergiaCarta temp1 = (EnergiaCarta)arrC[maior];
+            arrC[maior] = new TreinadorCarta((TreinadorCarta)arrC[s]);
+            arrC[s] = new EnergiaCarta(temp1);
           }
           break;
         }
@@ -871,26 +1100,26 @@ class PTCGUI{
           break;
           case 42:
           {
-            switch(arrI[(s-1)/2][2]){
+            switch(arrI[s][2]){
           case 12:
           {
-            TreinadorCarta temp1 = (TreinadorCarta)arrC[s];
-            arrC[s] = new PkmCarta((PkmCarta)arrC[(s-1)/2]);
-            arrC[(s-1)/2] = new TreinadorCarta(temp1);
+            TreinadorCarta temp1 = (TreinadorCarta)arrC[maior];
+            arrC[maior] = new PkmCarta((PkmCarta)arrC[s]);
+            arrC[s] = new TreinadorCarta(temp1);
           }
           break;
           case 24:
           {
-            TreinadorCarta temp1 = (TreinadorCarta)arrC[s];
-            arrC[s] = new EnergiaCarta((EnergiaCarta)arrC[(s-1)/2]);
-            arrC[(s-1)/2] = new TreinadorCarta(temp1); 
+            TreinadorCarta temp1 = (TreinadorCarta)arrC[maior];
+            arrC[maior] = new EnergiaCarta((EnergiaCarta)arrC[s]);
+            arrC[s] = new TreinadorCarta(temp1); 
           }
           break;
           case 42:
           {
-            TreinadorCarta temp1 = (TreinadorCarta)arrC[s];
-            arrC[s] = new TreinadorCarta((TreinadorCarta)arrC[(s-1)/2]);
-            arrC[(s-1)/2] = new TreinadorCarta(temp1);
+            TreinadorCarta temp1 = (TreinadorCarta)arrC[maior];
+            arrC[maior] = new TreinadorCarta((TreinadorCarta)arrC[s]);
+            arrC[s] = new TreinadorCarta(temp1);
           }
           break;
         }
@@ -899,22 +1128,226 @@ class PTCGUI{
         }
         
         //trocar pai e filho no array de ids
-        int tempI0 = arrI[s][0];
-        int tempI1 = arrI[s][1];
-        int tempI2 = arrI[s][2];
-        arrI[s][0] = arrI[(s-1)/2][0];
-        arrI[s][1] = arrI[(s-1)/2][1];
-        arrI[s][2] = arrI[(s-1)/2][2];
-        arrI[(s-1)/2][0] = tempI0;
-        arrI[(s-1)/2][1] = tempI1;
-        arrI[(s-1)/2][2] = tempI2;
-
-        
+        int tempI0 = arrI[maior][0];
+        int tempI1 = arrI[maior][1];
+        int tempI2 = arrI[maior][2];
+        arrI[maior][0] = arrI[s][0];
+        arrI[maior][1] = arrI[s][1];
+        arrI[maior][2] = arrI[s][2];
+        arrI[s][0] = tempI0;
+        arrI[s][1] = tempI1;
+        arrI[s][2] = tempI2;
+        }else{
+          switch(arrI[0][2]){
+              case 12:{
+                PkmCarta temp1 = (PkmCarta)arrC[0];
+                arrC[0] = null;
+                arrC[maior] = new PkmCarta(temp1);
+              }
+              break;
+              case 24:
+              {
+                EnergiaCarta temp1 = (EnergiaCarta)arrC[0];
+                arrC[0] = null;
+                arrC[maior] = new EnergiaCarta(temp1);
+              }
+              break;
+              case 42:
+              {
+                TreinadorCarta temp1 = (TreinadorCarta)arrC[0];
+                arrC[0] = null;
+                arrC[maior] = new TreinadorCarta(temp1);
+              }
+              break;
+        }
+        int tempI0 = arrI[0][0];
+        int tempI1 = arrI[0][1];
+        int tempI2 = arrI[0][2];
+        arrI[0][0] = arrI[maior][0];
+        arrI[0][1] = arrI[maior][1];
+        arrI[0][2] = arrI[maior][2];
+        arrI[maior][0] = tempI0;
+        arrI[maior][1] = tempI1;
+        arrI[maior][2] = tempI2;
+        }  
+        buildHeap(arrC,arrI,maior,tam);
       }
-      //Verificar pai do atual
-        s = (s-1)/2;  
+  }
+  /* ordenarHeap -> ordena os heaps argumento,de acordo com o metodo
+  * @param (Carta[] arrC) heap de cartas
+  * @param (int[][] arrI) heap de ids
+  */
+  void ordenarHeap(Carta[] arrC,int[][] arrI,int N){
+    for(int v = N/2 - 1;v>=0;v--){
+      buildHeap(arrC,arrI,v,N);
     }
-    }
+     for(int v = N - 1;v >= 0;v--){
+      if(arrC[v] == null){
+        if(arrC[0]!= null){
+          switch(arrI[0][2]){
+              case 12:{
+                PkmCarta temp1 = (PkmCarta)arrC[0];
+                arrC[0] = null;
+                arrC[v] = new PkmCarta(temp1);
+              }
+              break;
+              case 24:
+              {
+                EnergiaCarta temp1 = (EnergiaCarta)arrC[0];
+                arrC[0] = null;
+                arrC[v] = new EnergiaCarta(temp1);
+              }
+              break;
+              case 42:
+              {
+                TreinadorCarta temp1 = (TreinadorCarta)arrC[0];
+                arrC[0] = null;
+                arrC[v] = new TreinadorCarta(temp1);
+              }
+              break;
+        }
+        int tempI0 = arrI[0][0];
+        int tempI1 = arrI[0][1];
+        int tempI2 = arrI[0][2];
+        arrI[0][0] = arrI[v][0];
+        arrI[0][1] = arrI[v][1];
+        arrI[0][2] = arrI[v][2];
+        arrI[v][0] = tempI0;
+        arrI[v][1] = tempI1;
+        arrI[v][2] = tempI2;
+        }
+      }else{  
+        if(arrC[0]!=null){
+        switch(arrI[0][2]){
+          case 12:
+          {
+            switch(arrI[v][2]){
+          case 12:
+          {
+            PkmCarta temp1 = (PkmCarta)arrC[0];
+            arrC[0] = new PkmCarta((PkmCarta)arrC[v]);
+            arrC[v] = new PkmCarta(temp1);
+          }
+          break;
+          case 24:
+          {
+            PkmCarta temp1 = (PkmCarta)arrC[0];
+            arrC[0] = new EnergiaCarta((EnergiaCarta)arrC[v]);
+            arrC[v] = new PkmCarta(temp1);
+          }
+          break; 
+          case 42:
+          {
+            PkmCarta temp1 = (PkmCarta)arrC[0];
+            arrC[0] = new TreinadorCarta((TreinadorCarta)arrC[v]);
+            arrC[v] = new PkmCarta(temp1);
+          }
+          break;
+        }
+          }
+          break;
+          case 24:
+          {
+            switch(arrI[v][2]){
+          case 12:
+          {
+            EnergiaCarta temp1 = (EnergiaCarta)arrC[0];
+            arrC[0] = new PkmCarta((PkmCarta)arrC[v]);
+            arrC[v] = new EnergiaCarta(temp1);
+          }
+          break;
+          case 24:
+          {
+            EnergiaCarta temp1 = (EnergiaCarta)arrC[0];
+            arrC[0] = new EnergiaCarta((EnergiaCarta)arrC[v]);
+            arrC[v] = new EnergiaCarta(temp1);
+          }
+          break;
+          case 42:
+          {
+            EnergiaCarta temp1 = (EnergiaCarta)arrC[0];
+            arrC[0] = new TreinadorCarta((TreinadorCarta)arrC[v]);
+            arrC[v] = new EnergiaCarta(temp1);
+          }
+          break;
+        }
+          }
+          break;
+          case 42:
+          {
+            switch(arrI[v][2]){
+          case 12:
+          {
+            TreinadorCarta temp1 = (TreinadorCarta)arrC[0];
+            arrC[0] = new PkmCarta((PkmCarta)arrC[v]);
+            arrC[v] = new TreinadorCarta(temp1);
+          }
+          break;
+          case 24:
+          {
+            TreinadorCarta temp1 = (TreinadorCarta)arrC[0];
+            arrC[0] = new EnergiaCarta((EnergiaCarta)arrC[v]);
+            arrC[v] = new TreinadorCarta(temp1); 
+          }
+          break;
+          case 42:
+          {
+            TreinadorCarta temp1 = (TreinadorCarta)arrC[0];
+            arrC[0] = new TreinadorCarta((TreinadorCarta)arrC[v]);
+            arrC[v] = new TreinadorCarta(temp1);
+          }
+          break;
+        }
+          }
+          break;
+        }
+        
+        //trocar pai e filho no array de ids
+        int tempI0 = arrI[0][0];
+        int tempI1 = arrI[0][1];
+        int tempI2 = arrI[0][2];
+        arrI[0][0] = arrI[v][0];
+        arrI[0][1] = arrI[v][1];
+        arrI[0][2] = arrI[v][2];
+        arrI[v][0] = tempI0;
+        arrI[v][1] = tempI1;
+        arrI[v][2] = tempI2;
+     }else{
+        switch(arrI[v][2]){
+              case 12:{
+                PkmCarta temp1 = (PkmCarta)arrC[v];
+                arrC[v] = null;
+                arrC[0] = new PkmCarta(temp1);
+              }
+              break;
+              case 24:
+              {
+                EnergiaCarta temp1 = (EnergiaCarta)arrC[v];
+                arrC[v] = null;
+                arrC[0] = new EnergiaCarta(temp1);
+              }
+              break;
+              case 42:
+              {
+                TreinadorCarta temp1 = (TreinadorCarta)arrC[v];
+                arrC[v] = null;
+                arrC[0] = new TreinadorCarta(temp1);
+              }
+              break;
+        }
+        int tempI0 = arrI[v][0];
+        int tempI1 = arrI[v][1];
+        int tempI2 = arrI[v][2];
+        arrI[v][0] = arrI[0][0];
+        arrI[v][1] = arrI[0][1];
+        arrI[v][2] = arrI[0][2];
+        arrI[0][0] = tempI0;
+        arrI[0][1] = tempI1;
+        arrI[0][2] = tempI2;
+     }
+      }
+  buildHeap(arrC,arrI,0,v);
+  }
   }
   /* intercalarSelectSub -> faz a intercalação,preparada pela seleção por substituição
   * nos arquivos temporários argumentos e sobrescreve o arquivo .db argumento com o resultado
@@ -926,23 +1359,24 @@ class PTCGUI{
   */
   void intercalarSelectSub(RandomAccessFile temp1,RandomAccessFile temp2,RandomAccessFile temp3,RandomAccessFile temp4,RandomAccessFile db){
     try{
-    int count1,count2;//Contadores de quantos segmentos ficaram depois de cada passada da intercalação
-    //Vão ajudar a saber quando devo sobrescrever o arquivo original
     boolean Or1234 = true;//Se true,estou lendo dos arquivos 1 e 2 e escrevendo no 3 e 4
     //Se false,o contrário
     do{
       if(Or1234){
         temp1.seek(0);
         temp2.seek(0);
-        count1 = 0;
-        count2 = 0;
+        temp3.seek(0);
+        temp4.seek(0);
+        //Apagar temp 3 e 4
+        temp3.setLength(0);
+        temp4.setLength(0);
         long size1 = temp1.length();
         long size2 = temp2.length();
+        boolean write34 = true;//Se true,escrevendo em 3.Se false,escrevendo em 4
         //Enquanto não terminamos de ler os arquivos temporarios por inteiro
         while(temp1.getFilePointer()!= size1 || temp2.getFilePointer()!= size2){ 
           boolean temp1End = false,temp2End = false;//Para saber se chegamos ao fim dos segmentos
           //Enquanto não terminamos os dois segmentos escolhidos
-          boolean write34 = true;//Se true,escrevendo em 3.Se false,escrevendo em 4
           PkmCarta card1 = null,card2 = null;//Placeholders
           EnergiaCarta card3 = null,card4 = null;
           TreinadorCarta card5 = null,card6 = null;
@@ -959,35 +1393,25 @@ class PTCGUI{
             int test = temp2.readInt();
             if(test== -1){
               temp2End = true;
-              //Anular últimas referencias
-              card2 = null;
-              card4 = null;
-              card6 = null;
-              //Escrever delimitador
-              if(write34){
-                temp3.writeInt(-1);
-                count1++;
-              }else{
-                temp4.writeInt(-1);
-                count2++;
-              }
             }else{
               if(write34){
                 temp3.writeInt(test);
-                temp3.writeByte(temp2.readByte());
+                byte gamb23 = temp2.readByte();
+                temp3.writeByte(gamb23);
                 int size = temp2.readInt();
                 temp3.writeInt(size);
                 byte[] arrB = new byte[size];
                 temp2.read(arrB);
-                temp3.write(arrB);
+                temp3.write(writeByteArr(arrB,gamb23));
               }else{
                 temp4.writeInt(test);
-                temp4.writeByte(temp2.readByte());
+                byte gamb23 = temp2.readByte();
+                temp4.writeByte(gamb23);
                 int size = temp2.readInt();
                 temp4.writeInt(size);
                 byte[] arrB = new byte[size];
                 temp2.read(arrB);
-                temp4.write(arrB);
+                temp4.write(writeByteArr(arrB,gamb23));
               }
             }
             }
@@ -996,33 +1420,25 @@ class PTCGUI{
               int test = temp1.readInt();
             if(test== -1){
               temp1End = true;
-              card1 = null;
-              card3 = null;
-              card5 = null;
-              if(write34){
-                temp3.writeInt(-1);
-                count1++;
-              }else{
-                temp4.writeInt(-1);
-                count2++;
-              }
             }else{
               if(write34){
                 temp3.writeInt(test);
-                temp3.writeByte(temp1.readByte());
+                byte gamb100 = temp1.readByte();
+                temp3.writeByte(gamb100);
                 int size = temp1.readInt();
                 temp3.writeInt(size);
                 byte[] arrB = new byte[size];
                 temp1.read(arrB);
-                temp3.write(arrB);
+                temp3.write(writeByteArr(arrB,gamb100));
               }else{
                 temp4.writeInt(test);
-                temp4.writeByte(temp1.readByte());
+                byte gamb100 = temp1.readByte();
+                temp4.writeByte(gamb100);
                 int size = temp1.readInt();
                 temp4.writeInt(size);
                 byte[] arrB = new byte[size];
                 temp1.read(arrB);
-                temp4.write(arrB);
+                temp4.write(writeByteArr(arrB,gamb100));
               }
             }
             }else{
@@ -1036,7 +1452,7 @@ class PTCGUI{
                   temp1End = true;
                 }else{
                   byte checkCarta = temp1.readByte();
-                  System.out.println(checkCarta + " 1");
+                  
                   switch(checkCarta){
                     case 12:{
                       flagCardT1 = 1;
@@ -1064,9 +1480,7 @@ class PTCGUI{
                       }
                     break;
                     default:
-                      System.out.println("Erro ao verificar tipo carta durante intercalação");
-                      Scanner sc4 = new Scanner(System.in);
-                      sc4.nextLine();
+                      System.out.println("Erro ao verificar tipo carta durante intercalação.Byte1: "+ checkCarta);
                     break;
                   }
                 }
@@ -1089,7 +1503,7 @@ class PTCGUI{
                   temp2End = true;
                 }else{
                   byte checkCarta = temp2.readByte();
-                  System.out.println(checkCarta + " 2");
+                 
                   switch(checkCarta){
                     case 12:{
                       flagCardT2 = 2;
@@ -1117,9 +1531,8 @@ class PTCGUI{
                       }
                     break;
                     default:
-                      System.out.println("Erro ao verificar tipo carta durante intercalação");
-                      Scanner sc4 = new Scanner(System.in);
-                      sc4.nextLine();
+                      System.out.println("Erro ao verificar tipo carta durante intercalação.Byte2: "+ checkCarta);
+                      
                     break;
                   }
                 }
@@ -1139,6 +1552,9 @@ class PTCGUI{
              switch(flagCardT1){
               case -1:
                 switch(flagCardT2){
+                  case -1:
+
+                  break;
                   case 2:{
                     if(write34){
                         temp3.writeInt(card2.id);
@@ -1193,7 +1609,7 @@ class PTCGUI{
                   }
                   break;
                   default:
-                  System.out.println("Erro flagT2 durante Intercalação.");
+                  System.out.println("Erro flagT2 durante Intercalação.->" + flagCardT2);
                   break;
                 }
               break;
@@ -1323,7 +1739,7 @@ class PTCGUI{
                   }
                   break;
                   default:
-                  System.out.println("Erro flagT2 durante Intercalação.");
+                  System.out.println("Erro flagT2 durante Intercalação.->" + flagCardT2);
                   break;
                 }
               break;
@@ -1454,7 +1870,7 @@ class PTCGUI{
                   }
                   break;
                   default:
-                  System.out.println("Erro flagT2 durante Intercalação.");
+                  System.out.println("Erro flagT2 durante Intercalação.->" + flagCardT2);
                   break;
                 }
               }
@@ -1586,7 +2002,7 @@ class PTCGUI{
                   }
                   break;
                   default:
-                  System.out.println("Erro flagT2 durante Intercalação.");
+                  System.out.println("Erro flagT2 durante Intercalação.->" + flagCardT2);
                   break;
                 }
               }
@@ -1599,16 +2015,25 @@ class PTCGUI{
           }
 
         }
+        if(write34){
+                temp3.writeInt(-1);
+              }else{  
+                temp4.writeInt(-1);
+              }
         write34 = !write34;
         }
         Or1234 = !Or1234;
       }else{
+        temp1.seek(0);
+        temp2.seek(0);
         temp3.seek(0);
         temp4.seek(0);
-        count1 = 0;
-        count2 = 0;
+        //Apagar temp 1 e 2
+        temp1.setLength(0);
+        temp2.setLength(0);
         long size3 = temp3.length();
         long size4 = temp4.length();
+        boolean write12 = true;//Se true,estamos escrevendo em 1.Se false,escrevendo em 2
         //Enquanto não terminamos de ler os arquivos temporarios por inteiro
         while(temp3.getFilePointer()!= size3 || temp4.getFilePointer()!= size4){ 
           boolean temp3End = false,temp4End = false;//Para saber se chegamos ao fim dos segmentos
@@ -1616,7 +2041,7 @@ class PTCGUI{
           PkmCarta card1 = null,card2 = null;//Placeholders
           EnergiaCarta card3 = null,card4 = null;
           TreinadorCarta card5 = null,card6 = null;
-          boolean write12 = true;//Se true,estamos escrevendo em 1.Se false,escrevendo em 2
+          
           if(temp3.getFilePointer()==size3){
             temp3End = true;
           }
@@ -1629,34 +2054,25 @@ class PTCGUI{
             int test = temp4.readInt();
             if(test== -1){
               temp4End = true;
-              card2 = null;
-              card4 = null;
-              card6 = null;
-              if(write12){
-                temp1.writeInt(-1);
-                count1++;
-              }else{
-                temp2.writeInt(-1);
-                count2++;
-              }
-              
             }else{
               if(write12){
                 temp1.writeInt(test);
-                temp1.writeByte(temp4.readByte());
+                byte gamb100 = temp4.readByte();
+                temp1.writeByte(gamb100);
                 int size = temp4.readInt();
                 temp1.writeInt(size);
                 byte[] arrB = new byte[size];
                 temp4.read(arrB);
-                temp1.write(arrB);
+                temp1.write(writeByteArr(arrB,gamb100));
               }else{
                 temp2.writeInt(test);
-                temp2.writeByte(temp4.readByte());
+                byte gamb100 = temp4.readByte();
+                temp2.writeByte(gamb100);
                 int size = temp4.readInt();
                 temp2.writeInt(size);
                 byte[] arrB = new byte[size];
                 temp4.read(arrB);
-                temp2.write(arrB);
+                temp2.write(writeByteArr(arrB,gamb100));
               }
             }
             }
@@ -1665,33 +2081,25 @@ class PTCGUI{
               int test = temp3.readInt();
             if(test== -1){
               temp3End = true;
-              card1 = null;
-              card3 = null;
-              card5 = null;
-              if(write12){
-                temp1.writeInt(-1);
-                count1++;
-              }else{
-                temp2.writeInt(-1);
-                count2++;
-              }
             }else{
               if(write12){
                 temp1.writeInt(test);
-                temp1.writeByte(temp3.readByte());
+                byte gamb100 = temp3.readByte();
+                temp1.writeByte(gamb100);
                 int size = temp3.readInt();
                 temp1.writeInt(size);
                 byte[] arrB = new byte[size];
                 temp3.read(arrB);
-                temp1.write(arrB);
+                temp1.write(writeByteArr(arrB,gamb100));
               }else{
                 temp2.writeInt(test);
-                temp2.writeByte(temp3.readByte());
+                byte gamb100 = temp3.readByte();
+                temp2.writeByte(gamb100);
                 int size = temp3.readInt();
                 temp2.writeInt(size);
                 byte[] arrB = new byte[size];
                 temp3.read(arrB);
-                temp2.write(arrB);
+                temp2.write(writeByteArr(arrB,gamb100));
               }
             }
             }else{
@@ -1802,6 +2210,9 @@ class PTCGUI{
              switch(flagCardT1){
               case -1:
                 switch(flagCardT2){
+                  case -1:
+
+                  break;
                   case 2:{
                     if(write12){
                         temp1.writeInt(card2.id);
@@ -1856,7 +2267,7 @@ class PTCGUI{
                   }
                   break;
                   default:
-                  System.out.println("Erro flagT2 durante Intercalação.");
+                  System.out.println("Erro flagT2 durante Intercalação.->" + flagCardT2);
                   break;
                 }
               break;
@@ -1986,7 +2397,7 @@ class PTCGUI{
                   }
                   break;
                   default:
-                  System.out.println("Erro flagT2 durante Intercalação.");
+                  System.out.println("Erro flagT2 durante Intercalação.->" + flagCardT2);
                   break;
                 }
               break;
@@ -2117,7 +2528,7 @@ class PTCGUI{
                   }
                   break;
                   default:
-                  System.out.println("Erro flagT2 durante Intercalação.");
+                  System.out.println("Erro flagT2 durante Intercalação.->" + flagCardT2);
                   break;
                 }
               }
@@ -2249,7 +2660,7 @@ class PTCGUI{
                   }
                   break;
                   default:
-                  System.out.println("Erro flagT2 durante Intercalação.");
+                  System.out.println("Erro flagT2 durante Intercalação.->" + flagCardT2);
                   break;
                 }
               }
@@ -2261,81 +2672,43 @@ class PTCGUI{
             }
           }
         }
+        if(write12){
+              temp1.seek(temp1.getFilePointer() - 4);
+                if(!(temp1.readInt()==-1)){
+                temp1.writeInt(-1);
+              }
+              }else{
+                temp2.seek(temp2.getFilePointer() - 4);
+                if(!(temp2.readInt()==-1)){
+                temp2.writeInt(-1);
+              }
+              }
         write12 = !write12;
         }
         Or1234 = !Or1234;
       }
       
-    }while(!(count1 == 1 && count2 == 1));
-    //Achar arquivo onde intercalação parou pelo seu tamanho
-    int parou = 1;
-    long parouTam = temp1.length();
-    if(parouTam < temp2.length()){
-      parou = 2;
-      parouTam = temp2.length();
+    }while(temp1.length()!=0 &&temp2.length()!=0 && temp3.length()!=0 &&temp4.length()!=0);
+    }catch(Exception e){
+      e.printStackTrace();
     }
-    if(parouTam < temp3.length()){
-      parou = 3;
-      parouTam = temp3.length();
-    }
-    if(parouTam < temp4.length()){
-      parou = 4;
-      parouTam = temp4.length();
-    }
-    db.setLength(4);//Apagar db original,menos cabeçalho
-    db.seek(4);
-    switch(parou){
-      case 1:
-      temp1.seek(0);
-      while(temp1.getFilePointer()!=parouTam){
-        db.writeInt(temp1.readInt());
-        db.writeByte(0);//Todos os registros vindo da intercalação são válidos
-        db.writeByte(temp1.readByte());
-        int size = temp1.readInt();
-        byte[] arr = new byte[size];
-        temp1.read(arr);
-        db.write(arr);
-      }
-      break;
-      case 2:
-      temp2.seek(0);
-      while(temp2.getFilePointer()!=parouTam){
-        db.writeInt(temp2.readInt());
-        db.writeByte(0);
-        db.writeByte(temp2.readByte());
-        int size = temp2.readInt();
-        byte[] arr = new byte[size];
-        temp2.read(arr);
-        db.write(arr);
-      }
-      break;
-      case 3:
-      temp3.seek(0);
-      while(temp3.getFilePointer()!=parouTam){
-        db.writeInt(temp3.readInt());
-        db.writeByte(0);
-        db.writeByte(temp3.readByte());
-        int size = temp3.readInt();
-        byte[] arr = new byte[size];
-        temp3.read(arr);
-        db.write(arr);
-      }
-      break;
-      case 4:
-      temp4.seek(0);
-      while(temp4.getFilePointer()!=parouTam){
-        db.writeInt(temp4.readInt());
-        db.writeByte(0);
-        db.writeByte(temp4.readByte());
-        int size = temp4.readInt();
-        byte[] arr = new byte[size];
-        temp4.read(arr);
-        db.write(arr);
-      }
-      break;
+  }
+  byte[] writeByteArr(byte[] saving,byte me){
+    try{
+    switch(me){
+      case 12:
+        return new PkmCarta(saving,-1).paraByteArray();
+    
+      case 24:
+        return new EnergiaCarta(saving,-1).paraByteArray();
+    
+      case 42:
+        return new TreinadorCarta(saving,-1).paraByteArray();
+      
     }
     }catch(Exception e){
       e.printStackTrace();
     }
+    return new byte[]{1,2,3};
   }
 }
