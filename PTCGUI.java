@@ -58,6 +58,11 @@ class PTCGUI{
             ordenar(option);
           }
         } break;
+        case 6:
+        {
+          carga(sc);
+        }
+        break;
         case 0:
         {
           System.out.println("Saindo...");
@@ -83,6 +88,7 @@ class PTCGUI{
     System.out.println("3 - Para atualizar[(U)pdate] um registro da BD:");
     System.out.println("4 - Para deletar[(D)elete] um registro da BD:");
     System.out.println("5 - Ordene o arquivo");
+    System.out.println("6 - Crie um novo registro");
     System.out.println("0 - Para sair:");
     System.out.println("(Digite o número e aperte Enter)");
     System.out.println("----------------------------------");
@@ -281,6 +287,9 @@ class PTCGUI{
          count++; 
         }
         raf.close();
+        if(!meet){
+          System.out.println("ID inválido.");
+        }
       }
     }catch (Exception io){
       System.out.println(io.getMessage());
