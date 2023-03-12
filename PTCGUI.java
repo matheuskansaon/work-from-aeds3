@@ -2,6 +2,7 @@
 //É usada diretamente pela main,que está em PTCGCRUD.java
 import java.util.Scanner;
 import java.io.RandomAccessFile;
+import java.security.PKCS12Attribute;
 import java.io.File;
 
 class PTCGUI{
@@ -364,15 +365,686 @@ class PTCGUI{
   */
   void ordenar(int option){
     if(option == 1){
-
+      intercalar();
     }else if(option == 2 ){
-
+      intercalar2();
     }else if(option == 3){
       intercalacaoSelectSubstitute();
     }else{
       System.out.println("Opção Inválida");
     }
   }
+
+  void intercalar(){
+    try{
+      RandomAccessFile raf = new RandomAccessFile("baseDados.db","rw");
+      RandomAccessFile rafTemp1 = new RandomAccessFile("arquivoTemp1.temp","rw");
+      RandomAccessFile rafTemp2 = new RandomAccessFile("arquivoTemp2.temp","rw");
+      RandomAccessFile rafTemp3 = new RandomAccessFile("arquivoTemp3.temp","rw");
+      RandomAccessFile rafTemp4 = new RandomAccessFile("arquivoTemp4.temp","rw");
+      
+      raf.seek(4);// Pular cabeçalho
+      Long file = raf.length(); 
+  
+      while(raf.getFilePointer() != file){
+        Carta array[] = new Carta[5];
+        byte cartas[] = new byte[5];
+        int contador = 0;  
+        
+        for(int i = 0; i < 5 && raf.getFilePointer() != file; i++){
+          int id = raf.readInt();
+          byte lapide = raf.readByte();  
+          
+          
+          /*
+           * 
+           * Lê ou pula o registro
+           */
+          if(lapide == 0){
+           byte tipo_carta = raf.readByte();
+           cartas[i] = tipo_carta;
+           int tamanho_registro = raf.readInt();
+           byte vetor[] = new byte[tamanho_registro];
+           raf.read(vetor);
+
+           switch(tipo_carta){
+            case 12:
+              array[i] = new PkmCarta(vetor, id);
+              break;
+            case 24: 
+              array[i] = new EnergiaCarta(vetor, id);
+              break;
+            case 42: 
+              array[i] = new TreinadorCarta(vetor, id);
+              break;
+           }  
+           
+           contador += 1;
+          }else{
+            // Pular registro
+           raf.readByte();
+           int tamanho_registro = raf.readInt();
+            
+           long posicao = raf.getFilePointer();
+
+           raf.seek(posicao + tamanho_registro);
+          }
+        }
+
+        /* End Lê ou pula o registro */
+
+
+        /*
+         * Ordena o array de Cartas
+         */
+        for (int i = 0; i < contador; i++) {
+          for (int j = i + 1; j < contador; j++) {
+            if(! sortCarta(array[i], array[j])){
+              byte tmp = cartas[i];
+              cartas[i] = cartas[j];
+              cartas[j] = tmp; 
+              Carta carta = array[i];
+              array[i] = array[j];
+              array[j] = carta;
+              
+            }
+
+          }
+        }
+        // End Ordenação
+
+
+        //Salvar no arquivo temporário
+
+        for(int i = 0; i < contador; i++){
+          rafTemp1.writeInt(array[i].id);
+          rafTemp1.writeByte(cartas[i]);
+          switch(cartas[i]){
+            case 12:{ 
+              PkmCarta carta = (PkmCarta)array[i];
+              byte pokemom[] = carta.paraByteArray();
+              rafTemp1.writeInt(pokemom.length);
+              rafTemp1.write(pokemom);            
+              break;}
+            case 24:{ 
+              EnergiaCarta carta = (EnergiaCarta)array[i];
+              byte pokemom[] = carta.paraByteArray();
+              rafTemp1.writeInt(pokemom.length);
+              rafTemp1.write(pokemom);
+            break;}
+            case 42:{ 
+              TreinadorCarta carta = (TreinadorCarta)array[i];
+              byte pokemom[] = carta.paraByteArray();
+              rafTemp1.writeInt(pokemom.length);
+              rafTemp1.write(pokemom);
+            break;}
+          }
+        }
+        
+        rafTemp1.writeInt(-1);
+
+
+        array = new Carta[5];
+        cartas = new byte[5];
+        contador = 0;  
+        
+        for(int i = 0; i < 5 && raf.getFilePointer() != file; i++){
+          int id = raf.readInt();
+          byte lapide = raf.readByte();  
+          
+          
+          /*
+           * 
+           * Lê ou pula o registro
+           */
+          if(lapide == 0){
+           byte tipo_carta = raf.readByte();
+           cartas[i] = tipo_carta;
+           int tamanho_registro = raf.readInt();
+           byte vetor[] = new byte[tamanho_registro];
+           raf.read(vetor);
+
+           switch(tipo_carta){
+            case 12:
+              array[i] = new PkmCarta(vetor, id);
+              break;
+            case 24: 
+              array[i] = new EnergiaCarta(vetor, id);
+              break;
+            case 42: 
+              array[i] = new TreinadorCarta(vetor, id);
+              break;
+           }  
+           
+           contador += 1;
+          }else{
+            // Pular registro
+           raf.readByte();
+           int tamanho_registro = raf.readInt();
+            
+           long posicao = raf.getFilePointer();
+
+           raf.seek(posicao + tamanho_registro);
+          }
+        }
+
+        /* End Lê ou pula o registro */
+
+
+        /*
+         * Ordena o array de Cartas
+         */
+        for (int i = 0; i < contador; i++) {
+          for (int j = i + 1; j < contador; j++) {
+            if(! sortCarta(array[i], array[j])){
+              byte tmp = cartas[i];
+              cartas[i] = cartas[j];
+              cartas[j] = tmp; 
+              Carta carta = array[i];
+              array[i] = array[j];
+              array[j] = carta;
+              
+            }
+
+          }
+        }
+
+
+
+        for(int i = 0; i < contador; i++){
+          rafTemp2.writeInt(array[i].id);
+          rafTemp2.writeByte(cartas[i]);
+          switch(cartas[i]){
+            case 12:{ 
+              PkmCarta carta = (PkmCarta)array[i];
+              byte pokemom[] = carta.paraByteArray();
+              rafTemp2.writeInt(pokemom.length);
+              rafTemp2.write(pokemom);            
+              break;}
+            case 24:{ 
+              EnergiaCarta carta = (EnergiaCarta)array[i];
+              byte pokemom[] = carta.paraByteArray();
+              rafTemp2.writeInt(pokemom.length);
+              rafTemp2.write(pokemom);
+            break;}
+            case 42:{ 
+              TreinadorCarta carta = (TreinadorCarta)array[i];
+              byte pokemom[] = carta.paraByteArray();
+              rafTemp2.writeInt(pokemom.length);
+              rafTemp2.write(pokemom);
+            break;}
+          }
+        }
+        
+        rafTemp2.writeInt(-1);
+        // End Salvar
+      }
+
+      // intercalação
+
+      intercalarSelectSub(rafTemp1, rafTemp2, rafTemp3, rafTemp4);
+
+      int parou = 1;
+    long parouTam = rafTemp1.length();
+    if(parouTam < rafTemp2.length()){
+      parou = 2;
+      parouTam = rafTemp2.length();
+    }
+    if(parouTam < rafTemp3.length()){
+      parou = 3;
+      parouTam = rafTemp3.length();
+    }
+    if(parouTam < rafTemp4.length()){
+      parou = 4;
+      parouTam = rafTemp4.length();
+    }
+    raf.seek(0);
+    int idMax = raf.readInt();
+    raf.setLength(0);//Apagar db original
+    raf.writeInt(idMax);
+    switch(parou){
+      case 1:{
+      rafTemp1.seek(0);
+      while(rafTemp1.getFilePointer()<parouTam - 4)//Não pegar -1 final
+      {
+        raf.writeInt(rafTemp1.readInt());
+        raf.writeByte(0);//Todos os registros vindo da intercalação são válidos
+        raf.writeByte(rafTemp1.readByte());
+        int sizeG = rafTemp1.readInt();
+        raf.writeInt(sizeG);
+        byte[] arr = new byte[sizeG];
+        rafTemp1.read(arr);
+        raf.write(arr);
+      }
+      }
+      break;
+      case 2:
+      {
+      rafTemp2.seek(0);
+      while(rafTemp2.getFilePointer()<parouTam - 4){
+        raf.writeInt(rafTemp2.readInt());
+        raf.writeByte(0);
+        raf.writeByte(rafTemp2.readByte());
+        int sizeG = rafTemp2.readInt();
+        raf.writeInt(sizeG);
+        byte[] arr = new byte[sizeG];
+        rafTemp2.read(arr);
+        raf.write(arr);
+      }
+      }
+      break;
+      case 3:
+      {
+      rafTemp3.seek(0);
+      while(rafTemp3.getFilePointer()<parouTam - 4){
+        raf.writeInt(rafTemp3.readInt());
+        raf.writeByte(0);
+        raf.writeByte(rafTemp3.readByte());
+        int sizeG = rafTemp3.readInt();
+        raf.writeInt(sizeG);
+        byte[] arr = new byte[sizeG];
+        rafTemp3.read(arr);
+        raf.write(arr);
+      }
+      }
+      break;
+      case 4:
+      {
+      rafTemp1.seek(0);
+      while(rafTemp4.getFilePointer()<parouTam - 4){
+        raf.writeInt(rafTemp4.readInt());
+        raf.writeByte(0);
+        raf.writeByte(rafTemp4.readByte());
+        int sizeG = rafTemp4.readInt();
+        raf.writeInt(sizeG);
+        byte[] arr = new byte[sizeG];
+        rafTemp4.read(arr);
+        raf.write(arr);
+      }
+      }
+      break;
+    }
+      //Fechar arquivos e deletar os temporarios
+      raf.close();
+      rafTemp1.close();
+      rafTemp2.close();
+      rafTemp3.close();
+      rafTemp4.close();
+      File arq1 = new File("arquivoTemp1.temp");
+      arq1.delete();
+      File arq2 = new File("arquivoTemp2.temp");
+      arq2.delete();
+      File arq3 = new File("arquivoTemp3.temp");
+      arq3.delete();
+      File arq4 = new File("arquivoTemp4.temp");
+      arq4.delete();
+
+
+    }catch(Exception io){
+      io.getMessage();
+    }
+
+  
+  }
+
+
+
+
+
+  void intercalar2(){
+    try{
+      RandomAccessFile raf = new RandomAccessFile("baseDados.db","rw");
+      RandomAccessFile rafTemp1 = new RandomAccessFile("arquivoTemp1.temp","rw");
+      RandomAccessFile rafTemp2 = new RandomAccessFile("arquivoTemp2.temp","rw");
+      RandomAccessFile rafTemp3 = new RandomAccessFile("arquivoTemp3.temp","rw");
+      RandomAccessFile rafTemp4 = new RandomAccessFile("arquivoTemp4.temp","rw");
+      
+      raf.seek(4);// Pular cabeçalho
+      Long file = raf.length(); 
+  
+      while(raf.getFilePointer() != file){
+        Carta array[] = new Carta[5];
+        byte cartas[] = new byte[5];
+        int contador = 0;  
+        
+        for(int i = 0; i < 5 && raf.getFilePointer() != file; i++){
+          int id = raf.readInt();
+          byte lapide = raf.readByte();  
+          
+          
+          /*
+           * 
+           * Lê ou pula o registro
+           */
+          if(lapide == 0){
+           byte tipo_carta = raf.readByte();
+           cartas[i] = tipo_carta;
+           int tamanho_registro = raf.readInt();
+           byte vetor[] = new byte[tamanho_registro];
+           raf.read(vetor);
+
+           switch(tipo_carta){
+            case 12:
+              array[i] = new PkmCarta(vetor, id);
+              break;
+            case 24: 
+              array[i] = new EnergiaCarta(vetor, id);
+              break;
+            case 42: 
+              array[i] = new TreinadorCarta(vetor, id);
+              break;
+           }  
+           
+           contador += 1;
+          }else{
+            // Pular registro
+           raf.readByte();
+           int tamanho_registro = raf.readInt();
+            
+           long posicao = raf.getFilePointer();
+
+           raf.seek(posicao + tamanho_registro);
+          }
+        }
+
+        /* End Lê ou pula o registro */
+
+
+        /*
+         * Ordena o array de Cartas
+         */
+        for (int i = 0; i < contador; i++) {
+          for (int j = i + 1; j < contador; j++) {
+            if(! sortCarta(array[i], array[j])){
+              byte tmp = cartas[i];
+              cartas[i] = cartas[j];
+              cartas[j] = tmp; 
+              Carta carta = array[i];
+              array[i] = array[j];
+              array[j] = carta;
+              
+            }
+
+          }
+        }
+        // End Ordenação
+
+
+        //Salvar no arquivo temporário
+
+        for(int i = 0; i < contador; i++){
+          rafTemp1.writeInt(array[i].id);
+          rafTemp1.writeByte(cartas[i]);
+          switch(cartas[i]){
+            case 12:{ 
+              PkmCarta carta = (PkmCarta)array[i];
+              byte pokemom[] = carta.paraByteArray();
+              rafTemp1.writeInt(pokemom.length);
+              rafTemp1.write(pokemom);            
+              break;}
+            case 24:{ 
+              EnergiaCarta carta = (EnergiaCarta)array[i];
+              byte pokemom[] = carta.paraByteArray();
+              rafTemp1.writeInt(pokemom.length);
+              rafTemp1.write(pokemom);
+            break;}
+            case 42:{ 
+              TreinadorCarta carta = (TreinadorCarta)array[i];
+              byte pokemom[] = carta.paraByteArray();
+              rafTemp1.writeInt(pokemom.length);
+              rafTemp1.write(pokemom);
+            break;}
+          }
+        }
+        
+//        rafTemp1.writeInt(-1);
+        boolean flag = true;
+        while(flag){
+          Carta array2[] = new Carta[5];
+          cartas = new byte[5];
+          int contador2 = 0;  
+          
+          for(int i = 0; i < 5 && raf.getFilePointer() != file; i++){
+            int id = raf.readInt();
+            byte lapide = raf.readByte();  
+            
+            
+            /*
+            * 
+            * Lê ou pula o registro
+            */
+            if(lapide == 0){
+            byte tipo_carta = raf.readByte();
+            cartas[i] = tipo_carta;
+            int tamanho_registro = raf.readInt();
+            byte vetor[] = new byte[tamanho_registro];
+            raf.read(vetor);
+
+            switch(tipo_carta){
+              case 12:
+                array2[i] = new PkmCarta(vetor, id);
+                break;
+              case 24: 
+                array2[i] = new EnergiaCarta(vetor, id);
+                break;
+              case 42: 
+                array2[i] = new TreinadorCarta(vetor, id);
+                break;
+            }  
+            
+            contador2 += 1;
+            }else{
+              // Pular registro
+            raf.readByte();
+            int tamanho_registro = raf.readInt();
+              
+            long posicao = raf.getFilePointer();
+
+            raf.seek(posicao + tamanho_registro);
+            }
+          }
+        
+        /* End Lê ou pula o registro */
+
+
+        /*
+         * Ordena o array2 de Cartas
+         */
+        for (int i = 0; i < contador2; i++) {
+          for (int j = i + 1; j < contador2; j++) {
+            if(! sortCarta(array2[i], array2[j])){
+              byte tmp = cartas[i];
+              cartas[i] = cartas[j];
+              cartas[j] = tmp; 
+              Carta carta = array2[i];
+              array2[i] = array2[j];
+              array2[j] = carta;
+              
+            }
+
+          }
+        }
+
+        if(contador2 > 0){
+          if(sortCarta(array[contador - 1], array2[0]) ){
+            
+
+            for(int i = 0; i < contador; i++){
+              rafTemp1.writeInt(array2[i].id);
+              rafTemp1.writeByte(cartas[i]);
+              switch(cartas[i]){
+                case 12:{ 
+                  PkmCarta carta = (PkmCarta)array2[i];
+                  byte pokemom[] = carta.paraByteArray();
+                  rafTemp1.writeInt(pokemom.length);
+                  rafTemp1.write(pokemom);            
+                  break;}
+                case 24:{ 
+                  EnergiaCarta carta = (EnergiaCarta)array2[i];
+                  byte pokemom[] = carta.paraByteArray();
+                  rafTemp1.writeInt(pokemom.length);
+                  rafTemp1.write(pokemom);
+                break;}
+                case 42:{ 
+                  TreinadorCarta carta = (TreinadorCarta)array2[i];
+                  byte pokemom[] = carta.paraByteArray();
+                  rafTemp1.writeInt(pokemom.length);
+                  rafTemp1.write(pokemom);
+                break;}
+              }
+            }
+            
+          
+          }else{
+            rafTemp1.writeInt(-1);
+
+            flag = false;
+            
+            for(int i = 0; i < contador2; i++){
+                rafTemp2.writeInt(array2[i].id);
+                rafTemp2.writeByte(cartas[i]);
+                switch(cartas[i]){
+                  case 12:{ 
+                    PkmCarta carta = (PkmCarta)array2[i];
+                    byte pokemom[] = carta.paraByteArray();
+                    rafTemp2.writeInt(pokemom.length);
+                    rafTemp2.write(pokemom);            
+                    break;}
+                  case 24:{ 
+                    EnergiaCarta carta = (EnergiaCarta)array2[i];
+                    byte pokemom[] = carta.paraByteArray();
+                    rafTemp2.writeInt(pokemom.length);
+                    rafTemp2.write(pokemom);
+                  break;}
+                  case 42:{ 
+                    TreinadorCarta carta = (TreinadorCarta)array2[i];
+                    byte pokemom[] = carta.paraByteArray();
+                    rafTemp2.writeInt(pokemom.length);
+                    rafTemp2.write(pokemom);
+                  break;}
+                
+              }
+            
+            }
+            rafTemp2.writeInt(-1);
+          }
+        }
+
+        if (contador2 == 5){
+          for (int i = 0; i < array2.length; i++) {
+            array[i] = array2[i];
+          }
+        }
+        // End Salvar
+      }
+    }
+
+      // intercalação
+
+      intercalarSelectSub(rafTemp1, rafTemp2, rafTemp3, rafTemp4);
+
+      int parou = 1;
+    long parouTam = rafTemp1.length();
+    if(parouTam < rafTemp2.length()){
+      parou = 2;
+      parouTam = rafTemp2.length();
+    }
+    if(parouTam < rafTemp3.length()){
+      parou = 3;
+      parouTam = rafTemp3.length();
+    }
+    if(parouTam < rafTemp4.length()){
+      parou = 4;
+      parouTam = rafTemp4.length();
+    }
+    raf.seek(0);
+    int idMax = raf.readInt();
+    raf.setLength(0);//Apagar db original
+    raf.writeInt(idMax);
+    switch(parou){
+      case 1:{
+      rafTemp1.seek(0);
+      while(rafTemp1.getFilePointer()<parouTam - 4)//Não pegar -1 final
+      {
+        raf.writeInt(rafTemp1.readInt());
+        raf.writeByte(0);//Todos os registros vindo da intercalação são válidos
+        raf.writeByte(rafTemp1.readByte());
+        int sizeG = rafTemp1.readInt();
+        raf.writeInt(sizeG);
+        byte[] arr = new byte[sizeG];
+        rafTemp1.read(arr);
+        raf.write(arr);
+      }
+      }
+      break;
+      case 2:
+      {
+      rafTemp2.seek(0);
+      while(rafTemp2.getFilePointer()<parouTam - 4){
+        raf.writeInt(rafTemp2.readInt());
+        raf.writeByte(0);
+        raf.writeByte(rafTemp2.readByte());
+        int sizeG = rafTemp2.readInt();
+        raf.writeInt(sizeG);
+        byte[] arr = new byte[sizeG];
+        rafTemp2.read(arr);
+        raf.write(arr);
+      }
+      }
+      break;
+      case 3:
+      {
+      rafTemp3.seek(0);
+      while(rafTemp3.getFilePointer()<parouTam - 4){
+        raf.writeInt(rafTemp3.readInt());
+        raf.writeByte(0);
+        raf.writeByte(rafTemp3.readByte());
+        int sizeG = rafTemp3.readInt();
+        raf.writeInt(sizeG);
+        byte[] arr = new byte[sizeG];
+        rafTemp3.read(arr);
+        raf.write(arr);
+      }
+      }
+      break;
+      case 4:
+      {
+      rafTemp1.seek(0);
+      while(rafTemp4.getFilePointer()<parouTam - 4){
+        raf.writeInt(rafTemp4.readInt());
+        raf.writeByte(0);
+        raf.writeByte(rafTemp4.readByte());
+        int sizeG = rafTemp4.readInt();
+        raf.writeInt(sizeG);
+        byte[] arr = new byte[sizeG];
+        rafTemp4.read(arr);
+        raf.write(arr);
+      }
+      }
+      break;
+    }
+      //Fechar arquivos e deletar os temporarios
+      raf.close();
+      rafTemp1.close();
+      rafTemp2.close();
+      rafTemp3.close();
+      rafTemp4.close();
+      File arq1 = new File("arquivoTemp1.temp");
+      arq1.delete();
+      File arq2 = new File("arquivoTemp2.temp");
+      arq2.delete();
+      File arq3 = new File("arquivoTemp3.temp");
+      arq3.delete();
+      File arq4 = new File("arquivoTemp4.temp");
+      arq4.delete();
+
+
+    }catch(Exception io){
+      io.getMessage();
+    }
+
+  }
+
   /* sortCarta -> De acordo com os seguintes critérios,na ordem a seguir,ordena as duas
   * cartas argumento retornando true se a primeira for "menor" que a segunda,false caso
   * contrário.
