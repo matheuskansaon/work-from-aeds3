@@ -77,7 +77,6 @@ class PkmCarta extends Carta{
                         }
                         habilite+='@';
                     }
-                    
                 }
                 count++;
             }
@@ -90,6 +89,7 @@ class PkmCarta extends Carta{
                 if(readN){
                     if(info[8].charAt(count)==':'){
                         readN = false;//Para cartas com mais de um pokepower serem lidas corretamente
+                        count++;//Pular :
                         while(info[8].charAt(count)!='}'){
                             if(info[8].charAt(count)!='"'){
                                 habilite +=info[8].charAt(count);
@@ -103,14 +103,15 @@ class PkmCarta extends Carta{
                         if(!habilite.isEmpty()){
                             habilite += '@';//Para cartas com mais de um pokepower
                         }
+                        count++;
                         while(info[8].charAt(count)!=','){
                             if(info[8].charAt(count)!='"'){
                                 habilite +=info[8].charAt(count);
                             }
                             count++;
                         }
+                        habilite+='@';
                     }
-                    habilite+='@';
                 }
                 count++;
             }
