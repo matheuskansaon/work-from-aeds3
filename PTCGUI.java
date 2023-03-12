@@ -614,6 +614,15 @@ class PTCGUI{
         }
         rafTemp2.writeInt(-1);
       }
+      //Escrever delimitadores finais,caso não existam
+      rafTemp1.seek(rafTemp1.getFilePointer() - 4);
+      if(!(rafTemp1.readInt()==-1)){
+      rafTemp1.writeInt(-1);
+      }
+      rafTemp2.seek(rafTemp2.getFilePointer() - 4);
+      if(!(rafTemp2.readInt()==-1)){
+      rafTemp2.writeInt(-1);
+      }
       // intercalação
       intercalarSelectSub(rafTemp1, rafTemp2, rafTemp3, rafTemp4);
       int parou = 1;
@@ -999,6 +1008,15 @@ class PTCGUI{
         }
     }while(raf.getFilePointer() != file && flag1);
     }
+    //Escrever delimitadores finais,caso não existam
+      rafTemp1.seek(rafTemp1.getFilePointer() - 4);
+      if(!(rafTemp1.readInt()==-1)){
+      rafTemp1.writeInt(-1);
+      }
+      rafTemp2.seek(rafTemp2.getFilePointer() - 4);
+      if(!(rafTemp2.readInt()==-1)){
+      rafTemp2.writeInt(-1);
+      }
       // intercalação
       intercalarSelectSub(rafTemp1, rafTemp2, rafTemp3, rafTemp4);
 
@@ -1145,8 +1163,11 @@ class PTCGUI{
       }else if(card2.colecao.contains("Classic Collection")){
         resp = false;
       }else{
-        //Pela lógica do jogo,não deveria chegar aqui,mas caso chegue eu preciso saber para corrigir depois
-        System.out.println("Erro ordenação:Não foi possível checar se coleção é promo.");
+        //Caso o usuário  modifique uma coleção para um valor não padrão,cai aqui
+        //Onde verificamos com o compareTo
+          if(card2.colecao.compareTo(card1.colecao)<0){
+            resp = false;
+          }
       }
     }
     //Checagem numeração,se a última checagem foi igual
