@@ -9,6 +9,7 @@ import java.io.DataInputStream;
 import java.io.ByteArrayInputStream;
 import java.util.Locale;
 import java.util.Scanner;
+import java.util.Date;
 
 class TreinadorCarta extends Carta{
     //---------------
@@ -21,6 +22,17 @@ class TreinadorCarta extends Carta{
     //--------------
     //Construtor
     //--------------
+
+    TreinadorCarta(){
+        this.tipoTrainer = "";
+        this.efeito = "";
+        this.id = -1;
+        this.nome = "";
+        this.colecao = "";
+        this.numeracao = 0;
+        this.dataLancamento = new Date();
+        this.illustrator = "";
+    }
 
     TreinadorCarta(String[] info,int numb){
         super(info,numb);

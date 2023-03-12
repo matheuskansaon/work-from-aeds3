@@ -4,6 +4,7 @@ import java.util.Scanner;
 import java.io.RandomAccessFile;
 import java.security.PKCS12Attribute;
 import java.io.File;
+import java.io.FileNotFoundException;
 
 class PTCGUI{
   //Métodos
@@ -155,6 +156,74 @@ class PTCGUI{
         sc2.close();
       }catch(Exception e){
       e.printStackTrace();
+    }
+  }
+
+  void salvarArquivo(byte tipoCarta, byte array[]){
+    try{
+      RandomAccessFile file = new RandomAccessFile("baseDados.db", "rw");
+      long length = file.length();
+      
+      int id = file.readInt() + 1;
+      file.seek(length);
+      
+      if(file.getFilePointer() == length){
+        file.writeInt(id);
+        file.writeByte(0);
+        file.writeByte(tipoCarta);
+        file.writeInt(array.length);
+        file.write(array);
+      }
+
+    }catch(Exception file){
+      System.out.println("O arquivo .db ainda não existe, por favor carregue os dados");
+    }
+  }
+
+  void carga(Scanner teclado){
+    int tipo = 0;
+    System.out.println("Entre com o tipo de carta");
+    System.out.println("1) Carta de Pokemon");
+    System.out.println("2) Carta de Energia");
+    System.out.println("3) Carta de Treinador");
+
+    tipo = Integer.parseInt(teclado.nextLine());
+
+    switch(tipo){
+      case 1:{
+        try{
+          PkmCarta carta = new PkmCarta(); 
+          byte array[] = carta.modificar(teclado); 
+          salvarArquivo((byte)12, array);
+        }catch(Exception io){
+          System.out.println(io.getMessage());
+        }
+
+        break;
+      }
+      case 2:{
+
+      try{
+        EnergiaCarta carta = new EnergiaCarta();  
+        byte array[] = carta.modificar(teclado); 
+        salvarArquivo((byte)24, array);
+      }catch(Exception io){
+        System.out.println(io.getMessage());
+      }
+      break;
+     }
+      case 3:{
+
+      try{
+        TreinadorCarta carta = new TreinadorCarta(); 
+        byte array[] = carta.modificar(teclado); 
+        salvarArquivo((byte)42, array);
+        break;
+      }catch(Exception io){
+        System.out.println(io.getMessage());
+      }
+      }
+      default: System.out.println("Opção inválida");
     }
   }
   /* read -> percorre o arquivo sequencial,procurando um registro com id indicado para ser lido.

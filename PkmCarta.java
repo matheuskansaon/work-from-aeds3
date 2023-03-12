@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.DataInputStream;
 import java.io.ByteArrayInputStream;
 import java.util.Scanner;
+import java.util.Date;
 import java.util.Locale;
 
 class PkmCarta extends Carta{
@@ -34,6 +35,28 @@ class PkmCarta extends Carta{
     //Construtores
     //--------------
     
+    // Construtor Vazio
+
+    PkmCarta(){
+        this.evolveDe = "";
+        this.estagio = "";
+        this.vida = 0;
+        this.pokePwrBdy = "";
+        this.tipo = "";
+        this.resistencia = "";
+        this.custoRecuo = 0;
+        this.ataqueHabilidade = "";
+        this.fraqueza = "";
+        this.id = -1;
+        this.nome = "";
+        this.colecao = "";
+        this.numeracao = 0;
+        this.dataLancamento = new Date();
+        this.illustrator = "";
+    }
+
+
+
     //Construtor usado na leitura direta da base de dados
     PkmCarta(String[] info,int numb){
         super(info,numb);

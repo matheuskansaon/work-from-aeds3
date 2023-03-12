@@ -8,6 +8,7 @@ import java.io.DataInputStream;
 import java.io.ByteArrayInputStream;
 import java.util.Locale;
 import java.util.Scanner;
+import java.util.Date;
 
 class EnergiaCarta extends Carta{
     //---------------
@@ -20,6 +21,17 @@ class EnergiaCarta extends Carta{
     //--------------
     //Construtor
     //--------------
+
+    EnergiaCarta(){
+        this.tipoEnergia = "";
+        this.efeito = "";
+        this.id = -1;
+        this.nome = "";
+        this.colecao = "";
+        this.numeracao = 0;
+        this.dataLancamento = new Date();
+        this.illustrator = "";
+    }
 
     EnergiaCarta(String[] info,int numb){
         super(info,numb);
